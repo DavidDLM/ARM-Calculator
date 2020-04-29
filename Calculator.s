@@ -31,7 +31,7 @@ opcion: .byte ' '
 .type	main, %function
 
 main:
-	stmfd	sp!, {lr}
+	stmfd	sp!, {lr}	/* R4 es el input del usuario. El resultado se ira almacenando en R5. */
 	and r4,#0
 	and r5,#0
 	and r6,#0
