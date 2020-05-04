@@ -25,6 +25,7 @@ getop:	.asciz "%d"
 opcion: .byte ' '
 op: .word 0
 txt_operando: .asciz "Numero a operar: "
+error: .asciz "Numero no puede ser 0"
 
 /*|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
 
@@ -56,12 +57,36 @@ menu_loop:
 	strb r0,[r1]
 	
 	ldrb r4, [r1]	/* Cargar char a r4 */
+
+	/* Ingreso de datos del usuario */
+ingresoDatos:
 	
-	b check
+	ldr r0,=txt_operando
+	bl puts
+	ldr r0,=getop
+	ldr r1,=op
+	bl scanf
 	
-check:
+	/* Programacion defensiva */
+	cmp r0,#0
+	bne calculos
+	bl getchar
+	ldr r0,=error
+	bl puts
+	b ingresoDatos
+	
+	
+calculos:	
+	ldr r0,=op
+	ldr r0,[r0]
+	mov r1,r5
+	
 	cmp r4, #'+' 
 	beq subroutine_suma		/* Si r5 = + suma */
+	
+	mov r1,r0
+	ldr r0,=res_sum
+	bl printf
 	
 	cmp r4, #'-'
 	beq subroutine_resta	/* Si r5 = - resta */
@@ -88,7 +113,20 @@ _exit:
 	mov	r3, #0	
 	mov	r0, r3
 	ldmfd	sp!, {lr}	/* Salida correcta */
-	bx	lr
+	bx lr
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
