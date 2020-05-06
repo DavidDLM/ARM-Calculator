@@ -21,6 +21,7 @@ res_tot: .asciz "El resultado de las operaciones efectuadas es: %d \n"
 
 menu_calc: .asciz "Bienvenido! \n+.Suma \n-.Resta \n*.Multiplicacion \nM.Division con residuo \nP.Potencia \n=.Resultado total \nq.Salir"
 opcion_msg: .asciz "Eleccion: "
+invalio_msg: .asciz "Eleccion invalida."
 getop:	.asciz "%d"
 opcion: .byte ' '
 op: .word 0
@@ -71,19 +72,19 @@ main:
 	cmp r4, #'*'
 	beq multiplicacion	 /*Si r5 = * mutiplicacion */
 
-	/*cmp r4, #'M'
-	beq subroutine_div	 	Si r5 = M division */
+	cmp r4, #'M'
+	beq division	 	/* Si r5 = M division */
 
 	cmp r4, #'P'
 	beq potencia	/* Si r5 = P potencia*/ 
 
-	/*cmp r4, #'='
-	beq subroutine_tot	 Si r5 = = resultado */
+	cmp r4, #'='
+	beq resultado	 /* Si r5 = = resultado */
 
 	cmp r4, #'q'
 	beq _exit		/* Si r5 = q salida */
 
-	@bne invalido 	@@En caso de no ser ningun valor irse a la funcion
+	bne invalido 	@@En caso de no ser ningun valor irse a la funcion
 	
 sumar:
 	ldr r0,= txt_operando
@@ -178,11 +179,54 @@ potencia:
 	bl getchar
 	b main
 	
+
+division:
+
+	ldr r0,= txt_operando
+	bl puts
 	
+	ldr r0,= getop
+	ldr r1,=op_1
+	bl scanf
+	
+	ldr r0,=op_1
+	ldr r0,[r0]
+	mov r5,r0
+	ldr r1,=op
+	ldr r1,[r1]
+	bl subroutine_division
+	
+	mov r1, r0
+	ldr r0,= res_div
+	bl printf
+	ldr r10,=op
+	str r5,[r10]
+	bl getchar
+	b main
+
+resultado:
+	ldr r0,=res_tot
+	mov r1,r5
+	bl printf
+	
+	bl getchar
+	b main
+
+invalido:
+			
+	ldr r0,=invalio_msg	
+	bl puts
+	ldr r0,=opcion_msg	
+	bl puts
+	bl getchar	
+	b main 		
 
 _exit:
 	@mov	r3, #0	
 	@mov	r0, r3
 	ldmfd	sp!, {lr}	/* Salida correcta */
 	bx	lr
+
+
+
 	
