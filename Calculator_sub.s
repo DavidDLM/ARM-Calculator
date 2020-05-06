@@ -1,46 +1,19 @@
 @ Calculator subroutines
 
-/*|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
-
-@ Variables / mensajes
-.data
-.align 2
-
-op_1:	.asciz "El operando 1 es: %d \n"
-op_2:	.asciz "El operando 2 es: %d \n"
-
-res_sum: .asciz "El resultado de la suma es: %d \n"
-res_res: .asciz "El resultado de la resta es: %d \n"
-res_mul: .asciz "El resultado de la multiplicacion es: %d \n"
-res_div: .asciz "El resultado de la division es: %d \n"
-res_div_res: .asciz "El residuo es: %d \n"
-res_pot: .asciz "El resultado de la potencia es: %d \n"
-res_tot: .asciz "El resultado de las operaciones efectuadas es: %d \n"
-
-menu_calc: .asciz "Bienvenido! \n+.Suma \n-.Resta \n*.Multiplicacion \nM.Division con residuo \nP.Potencia \n=.Resultado total \nq.Salir"
-opcion_msg: .asciz "Eleccion: "
-getop:	.asciz "%d"
-opcion: .byte ' '
-op: .word 0
-txt_operando: .asciz "Numero a operar: "
-
-/*|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
 
 .text
 .align 2
 
-
+	and r7,#0
+	
 .global subroutine_suma
 @--------------------------------------------------
 @Subrutina para sumar dos numeros
 @Param:
-@	r0: mensajes
-@	r1: temporal
-@	r5: valor guardado en memoria resultado 
-@	r7: recibe un .word para operar
+@	r0: valor1
+@	r1: valor2
 @Return:
-@	r5: retorna el resultado r1+r5
-@	r1: el valor de r5 a r1 listo para imprimirse
+@	r0: retorna el resultado r0+r1
 @--------------------------------------------------
 subroutine_suma:
 
@@ -50,35 +23,70 @@ subroutine_suma:
 	
 .global subroutine_resta
 @--------------------------------------------------
-@Subrutina para restar dos numeros
+@Subrutina para sumar dos numeros
 @Param:
-@	r0: mensajes
-@	r1: temporal
-@	r5: valor guardado en memoria resultado 
-@	r7: recibe un .word para operar
+@	r0: valor1
+@	r1: valor2
 @Return:
-@	r5: retorna el resultado r7-r5
-@	r1: el valor de r5 a r1 listo para imprimirse
+@	r0: retorna el resultado r0-r1
 @--------------------------------------------------
 subroutine_resta:
 
-	sub r0,r0,r1
+	sub r0,r1,r0
 	mov pc,lr
 	
 .global subroutine_multiplicacion
 @--------------------------------------------------
-@Subrutina para multiplicar dos numeros
+@Subrutina para sumar dos numeros
 @Param:
-@	r0: mensajes
-@	r1: temporal
-@	r5: valor guardado en memoria resultado 
-@	r7: recibe un .word para operar
+@	r0: valor1
+@	r1: valor2
 @Return:
-@	r5: retorna el resultado r7-r5
-@	r1: el valor de r5 a r1 listo para imprimirse
+@	r0: retorna el resultado r0*r1
 @--------------------------------------------------
 subroutine_multiplicacion:
 
 	mul r0,r0,r1
 	mov pc,lr
+
+.global subroutine_potencia
+@--------------------------------------------------
+@Subrutina para potenciar dos numeros
+@Param:
+@	r0: valor1
+@	r1: valor2
+@Return:
+@	r0: retorna el resultado r0+r1
+@--------------------------------------------------
+subroutine_potencia:
 	
+	mul r0,r1,r1
+	add r7,r7,#1
+	cmp r7,r1
+	bne subroutine_potencia
+	and r7,#0
+	mov pc,lr
+
+.global subroutine_division
+@--------------------------------------------------
+@Subrutina para potenciar dos numeros
+@Param:
+@	r0: valor1
+@	r1: valor2
+@Return:
+@	r0: retorna el resultado r0/r1
+@--------------------------------------------------
+subroutine_division:
+	
+	sub r0,r0,r1
+	add r7,r7,#1
+	cmp r0,r1
+	bge subroutine_division
+	mov r0,r1
+	and r7,#0	
+	mov pc,lr
+
+
+
+
+
